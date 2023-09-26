@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pneumonia Prediction</title>
+</head>
+<body>
+    <h1>Pneumonia Prediction</h1>
+    <input type="file" id="imageUpload" accept=".jpg, .jpeg, .png">
+    <button id="predictButton">Predict</button>
+    <p id="result"></p>
+    
+    <!-- 이미지를 표시할 <img> 요소 -->
+    <img id="uploadedImage" src="" alt="Uploaded Image" style="max-width: 90%; max-height: 300px;">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script type="module" src="predict.js"></script>
+</body>
+</html>
