@@ -1,0 +1,6 @@
+pandas
+glob
+wave
+numpy
+json
+os

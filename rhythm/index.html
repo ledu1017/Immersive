@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ball game</title>
+    <style>
+        #container {
+            display: flex;
+            justify-content: space-between;
+            background-color: #eee;
+        }
+        #ball-canvas {
+            flex: 1;
+            margin: 0;
+        }
+        #camera-canvas {
+            flex: 1;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="ball-canvas" width="400" height="400"></canvas>
+        <canvas id="camera-canvas" width="400" height="400"></canvas>
+    </div>
+    <div id="label-container"></div>
+    <script src="move_ball.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8.3/dist/teachablemachine-pose.min.js"></script>
+    <script type="text/javascript">
+        const URL = "./model/";
+        let model, webcam, ctx, labelContainer, maxPredictions, actionSpan;
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // load the model and metadata
+            model = await tmPose.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Request webcam access
+            const size = 200;
+            const flip = true;
+            webcam = new tmPose.Webcam(size, size, flip);
+
+            try {
+                await webcam.setup();
+                await webcam.play();
+            } catch (error) {
+                console.error("Error accessing webcam:", error);
+            }
+
+            window.requestAnimationFrame(loop);
+
+            const canvas = document.getElementById("camera-canvas");
+            canvas.width = size;
+            canvas.height = size;
+            
+            // 이미 선언한 ctx 변수에 값을 할당합니다.
+            ctx = canvas.getContext("2d");
+            
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.appendChild(document.createElement("div"));
+            }
+
+            actionSpan = document.getElementById('action')
+        }
+
+
+        async function loop(timestamp) {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+            const prediction = await model.predict(posenetOutput);
+
+            let bestPrediction = 0;
+            let bestPredictionIdx = 0;
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+
+                if (prediction[i].probability > bestPrediction) {
+                    bestPrediction = prediction[i].probability;
+                    bestPredictionIdx = i;
+                }
+            }
+
+            //actionSpan.innerText = prediction[bestPredictionIdx].className;
+            drawPose();
+        }
+
+        function drawPose(pose) {
+            if (webcam.canvas) {
+                ctx.drawImage(webcam.canvas, 0, 0);
+                if (pose) {
+                    const minPartConfidence = 0.5;
+                    tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+                    tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+                }
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
