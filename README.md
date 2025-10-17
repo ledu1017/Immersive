@@ -28,7 +28,7 @@
 - **Mosaic/**  
   데이터 증강(Data Augmentation) 및 모자이크(Mosaic) 관련 실험
 
-- **smartphone_sensor_motion_classification/**
+- **smartphone_sensor_motion_classification/**  
   스마트폰 센서 데이터 기반 사용자 모션 분류
 
 ## 사용 방법
