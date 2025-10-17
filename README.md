@@ -28,6 +28,9 @@
 - **Mosaic/**  
   데이터 증강(Data Augmentation) 및 모자이크(Mosaic) 관련 실험
 
+- **smartphone_sensor_motion_classification/**
+  스마트폰 센서 데이터 기반 사용자 모션 분류
+
 ## 사용 방법
 
 각 프로젝트 폴더 내의 README 또는 코드 파일을 참고하여 실행 환경을 설정하고 실습을 진행할 수 있습니다.  
